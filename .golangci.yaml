@@ -1,0 +1,19 @@
+run:
+  tests: false
+  skip-dirs:
+    - test
+linters:
+  enable-all: true
+  disable:
+    - gci
+linters-settings:
+  gocritic:
+    enabled-tags:
+      - style
+      - experimental
+      - performance
+      - diagnostic
+      - opinionated
+issues:      
+  include:
+    # - EXC0002 # TODO
