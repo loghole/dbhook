@@ -103,8 +103,8 @@ func (h *Hooks) After(ctx context.Context, input *HookInput) (context.Context, e
 func (h *Hooks) Error(ctx context.Context, input *HookInput) (context.Context, error) {
 	err := input.Error
 
-	for i := range h.after {
-		ctx, err = h.after[i].Call(ctx, input)
+	for i := range h.err {
+		ctx, err = h.err[i].Call(ctx, input)
 		if err != nil {
 			return ctx, err //nolint:wrapcheck // need clear error
 		}
