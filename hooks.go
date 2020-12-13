@@ -10,6 +10,12 @@ type HookCall interface {
 	Call(ctx context.Context, input *HookInput) (context.Context, error)
 }
 
+type HookCallFunc func(ctx context.Context, input *HookInput) (context.Context, error)
+
+func (f HookCallFunc) Call(ctx context.Context, input *HookInput) (context.Context, error) {
+	return f(ctx, input)
+}
+
 type Hook interface {
 	Before(ctx context.Context, input *HookInput) (context.Context, error)
 	After(ctx context.Context, input *HookInput) (context.Context, error)
@@ -105,8 +111,8 @@ func (h *Hooks) Error(ctx context.Context, input *HookInput) (context.Context, e
 
 	for i := range h.err {
 		ctx, err = h.err[i].Call(ctx, input)
-		if err != nil {
-			return ctx, err //nolint:wrapcheck // need clear error
+		if err == nil {
+			return ctx, nil
 		}
 	}
 
