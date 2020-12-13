@@ -10,3 +10,5 @@ lint:
 coclient:
 	docker exec -it dbhook_cockroachdb_1 ./cockroach sql --insecure 
 	
+generate:
+	go generate ./...
