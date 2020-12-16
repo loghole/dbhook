@@ -6,8 +6,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/loghole/dbhook"
 	"gotest.tools/assert"
+
+	"github.com/loghole/dbhook"
 )
 
 type ctxKey string
@@ -22,7 +23,19 @@ type beforeHook struct {
 	t *testing.T
 }
 
-func (h *beforeHook) Call(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+func (h *beforeHook) Before(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+	assert.Equal(h.t, ctx.Value(key), ctxValue)
+
+	return ctx, nil
+}
+
+func (h *beforeHook) After(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+	assert.Equal(h.t, ctx.Value(key), ctxValue)
+
+	return ctx, nil
+}
+
+func (h *beforeHook) Error(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
 	assert.Equal(h.t, ctx.Value(key), ctxValue)
 
 	return ctx, nil
