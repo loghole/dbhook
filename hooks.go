@@ -6,20 +6,22 @@ import (
 	"fmt"
 )
 
-type HookCall interface {
-	Call(ctx context.Context, input *HookInput) (context.Context, error)
+type HookBefore interface {
+	Before(ctx context.Context, input *HookInput) (context.Context, error)
 }
 
-type HookCallFunc func(ctx context.Context, input *HookInput) (context.Context, error)
+type HookAfter interface {
+	After(ctx context.Context, input *HookInput) (context.Context, error)
+}
 
-func (f HookCallFunc) Call(ctx context.Context, input *HookInput) (context.Context, error) {
-	return f(ctx, input)
+type HookError interface {
+	Error(ctx context.Context, input *HookInput) (context.Context, error)
 }
 
 type Hook interface {
-	Before(ctx context.Context, input *HookInput) (context.Context, error)
-	After(ctx context.Context, input *HookInput) (context.Context, error)
-	Error(ctx context.Context, input *HookInput) (context.Context, error)
+	HookBefore
+	HookAfter
+	HookError
 }
 
 type HookInput struct {
@@ -32,9 +34,9 @@ type HookInput struct {
 type HookOption func(*Hooks)
 
 type Hooks struct {
-	before []HookCall
-	after  []HookCall
-	err    []HookCall
+	before []HookBefore
+	after  []HookAfter
+	err    []HookError
 }
 
 func NewHooks(opts ...HookOption) *Hooks {
@@ -47,7 +49,17 @@ func NewHooks(opts ...HookOption) *Hooks {
 	return hooks
 }
 
-func WithHooksBefore(hooks ...HookCall) HookOption {
+func WithHook(hooks ...Hook) HookOption {
+	return func(h *Hooks) {
+		for _, hook := range hooks {
+			h.before = append(h.before, hook)
+			h.after = append(h.after, hook)
+			h.err = append(h.err, hook)
+		}
+	}
+}
+
+func WithHooksBefore(hooks ...HookBefore) HookOption {
 	return func(h *Hooks) {
 		switch {
 		case len(h.before) == 0:
@@ -58,7 +70,7 @@ func WithHooksBefore(hooks ...HookCall) HookOption {
 	}
 }
 
-func WithHooksAfter(hooks ...HookCall) HookOption {
+func WithHooksAfter(hooks ...HookAfter) HookOption {
 	return func(h *Hooks) {
 		switch {
 		case len(h.after) == 0:
@@ -69,7 +81,7 @@ func WithHooksAfter(hooks ...HookCall) HookOption {
 	}
 }
 
-func WithHooksError(hooks ...HookCall) HookOption {
+func WithHooksError(hooks ...HookError) HookOption {
 	return func(h *Hooks) {
 		switch {
 		case len(h.err) == 0:
@@ -84,7 +96,7 @@ func (h *Hooks) Before(ctx context.Context, input *HookInput) (context.Context, 
 	var err error
 
 	for i := range h.before {
-		ctx, err = h.before[i].Call(ctx, input)
+		ctx, err = h.before[i].Before(ctx, input)
 		if err != nil {
 			return ctx, fmt.Errorf("before hook #%d call failed: %w", i, err)
 		}
@@ -97,7 +109,7 @@ func (h *Hooks) After(ctx context.Context, input *HookInput) (context.Context, e
 	var err error
 
 	for i := range h.after {
-		ctx, err = h.after[i].Call(ctx, input)
+		ctx, err = h.after[i].After(ctx, input)
 		if err != nil {
 			return ctx, fmt.Errorf("after hook #%d call failed: %w", i, err)
 		}
@@ -110,7 +122,7 @@ func (h *Hooks) Error(ctx context.Context, input *HookInput) (context.Context, e
 	err := input.Error
 
 	for i := range h.err {
-		ctx, err = h.err[i].Call(ctx, input)
+		ctx, err = h.err[i].Error(ctx, input)
 		if err == nil {
 			return ctx, nil
 		}

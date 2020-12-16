@@ -9,6 +9,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
+
 	"github.com/loghole/dbhook"
 )
 
@@ -20,7 +21,19 @@ var (
 type beforeHook struct {
 }
 
-func (h *beforeHook) Call(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+func (h *beforeHook) Before(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+	log.Println(input.Caller, input.Query)
+
+	return ctx, nil
+}
+
+func (h *beforeHook) After(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
+	log.Println(input.Caller, input.Query)
+
+	return ctx, nil
+}
+
+func (h *beforeHook) Error(ctx context.Context, input *dbhook.HookInput) (context.Context, error) {
 	log.Println(input.Caller, input.Query)
 
 	return ctx, nil
