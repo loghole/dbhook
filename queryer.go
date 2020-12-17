@@ -21,7 +21,7 @@ func (conn *QueryerContext) QueryContext(
 		hookInput = &HookInput{
 			Query:  query,
 			Args:   vals,
-			Caller: CallerStmtExec,
+			Caller: CallerQuery,
 			Error:  nil,
 		}
 	)
