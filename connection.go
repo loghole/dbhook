@@ -66,6 +66,7 @@ func (conn *Conn) PrepareContext(ctx context.Context, query string) (driver.Stmt
 
 func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
 	var (
+		initCtx   = ctx
 		err       error
 		tx        driver.Tx
 		hookInput = &HookInput{
@@ -107,5 +108,5 @@ func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx
 		}
 	}
 
-	return &Tx{Tx: tx, hooks: conn.hooks, ctx: ctx}, nil
+	return &Tx{Tx: tx, hooks: conn.hooks, ctx: initCtx}, nil
 }
