@@ -119,14 +119,12 @@ func (h *Hooks) After(ctx context.Context, input *HookInput) (context.Context, e
 }
 
 func (h *Hooks) Error(ctx context.Context, input *HookInput) (context.Context, error) {
-	err := input.Error
-
 	for i := range h.err {
-		ctx, err = h.err[i].Error(ctx, input)
-		if err == nil {
+		ctx, input.Error = h.err[i].Error(ctx, input)
+		if input.Error == nil {
 			return ctx, nil
 		}
 	}
 
-	return ctx, err //nolint:wrapcheck // need clear error
+	return ctx, input.Error //nolint:wrapcheck // need clear error
 }
