@@ -31,7 +31,7 @@ func MakeTxDriver(ctrl *gomock.Controller, name string) driver.Driver {
 
 				rows.EXPECT().Next(gomock.Any()).AnyTimes().SetArg(0, []driver.Value{"some"}).
 					DoAndReturn(func(args []driver.Value) error {
-						if rowsCallCounter >= 2 {
+						if rowsCallCounter >= 2 { // nolint:gomnd // it's test
 							return io.EOF
 						}
 
@@ -54,15 +54,16 @@ func MakeTxDriver(ctrl *gomock.Controller, name string) driver.Driver {
 
 		connTx := mocks.NewMockConnBeginTx(ctrl)
 
-		connTx.EXPECT().BeginTx(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
-			tx := mocks.NewMockTx(ctrl)
+		connTx.EXPECT().BeginTx(gomock.Any(), gomock.Any()).
+			DoAndReturn(func(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
+				tx := mocks.NewMockTx(ctrl)
 
-			tx.EXPECT().Commit().DoAndReturn(func() error {
-				return nil
+				tx.EXPECT().Commit().DoAndReturn(func() error {
+					return nil
+				})
+
+				return tx, nil
 			})
-
-			return tx, nil
-		})
 
 		return &queryerConn{conn, connTx, queryer, execer}, nil
 	})

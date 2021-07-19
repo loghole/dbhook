@@ -33,7 +33,7 @@ func (conn *Conn) PrepareContext(ctx context.Context, query string) (driver.Stmt
 	if conn.hooks != nil {
 		ctx, err = conn.hooks.Before(ctx, hookInput)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -45,19 +45,19 @@ func (conn *Conn) PrepareContext(ctx context.Context, query string) (driver.Stmt
 
 	if err != nil {
 		if conn.hooks == nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 
 		hookInput.Error = err
 
 		if _, err := conn.hooks.Error(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	if conn.hooks != nil {
 		if _, err := conn.hooks.After(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -80,7 +80,7 @@ func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx
 	if conn.hooks != nil {
 		ctx, err = conn.hooks.Before(ctx, hookInput)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -92,21 +92,33 @@ func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx
 
 	if err != nil {
 		if conn.hooks == nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 
 		hookInput.Error = err
 
 		if _, err := conn.hooks.Error(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	if conn.hooks != nil {
 		if _, err := conn.hooks.After(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	return &Tx{Tx: tx, hooks: conn.hooks, ctx: initCtx}, nil
+}
+
+func (conn *Conn) CheckNamedValue(nv *driver.NamedValue) (err error) {
+	if val, ok := conn.Conn.(driver.NamedValueChecker); ok { // need for clickhouse driver.
+		return val.CheckNamedValue(nv)
+	}
+
+	// Use default golang std lib check.
+	// https://github.com/golang/go/blob/2ebe77a2fda1ee9ff6fd9a3e08933ad1ebaea039/src/database/sql/convert.go#L96
+	nv.Value, err = driver.DefaultParameterConverter.ConvertValue(nv.Value)
+
+	return err
 }

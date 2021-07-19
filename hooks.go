@@ -25,10 +25,10 @@ type Hook interface {
 }
 
 type HookInput struct {
-	Caller CallerType
-	Query  string
-	Args   []driver.Value
 	Error  error
+	Args   []driver.Value
+	Query  string
+	Caller CallerType
 }
 
 type HookOption func(*Hooks)
@@ -126,5 +126,5 @@ func (h *Hooks) Error(ctx context.Context, input *HookInput) (context.Context, e
 		}
 	}
 
-	return ctx, input.Error //nolint:wrapcheck // need clear error
+	return ctx, input.Error
 }
