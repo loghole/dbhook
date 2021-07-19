@@ -29,26 +29,26 @@ func (conn *QueryerContext) QueryContext(
 	if conn.hooks != nil {
 		ctx, err = conn.hooks.Before(ctx, hookInput)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	results, err := conn.queryContext(ctx, query, args)
 	if err != nil {
 		if conn.hooks == nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 
 		hookInput.Error = err
 
 		if _, err := conn.hooks.Error(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	if conn.hooks != nil {
 		if _, err := conn.hooks.After(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err // nolint:wrapcheck // need clear error
 		}
 	}
 
@@ -62,14 +62,14 @@ func (conn *QueryerContext) queryContext(
 ) (driver.Rows, error) {
 	switch c := conn.Conn.Conn.(type) {
 	case driver.QueryerContext:
-		return c.QueryContext(ctx, query, args)
+		return c.QueryContext(ctx, query, args) // nolint:wrapcheck // need clear error
 	case driver.Queryer: // nolint:staticcheck // deprecated
 		dargs, err := namedValueToValue(args)
 		if err != nil {
 			return nil, fmt.Errorf("can't contert named value to value: %w", err)
 		}
 
-		return c.Query(query, dargs)
+		return c.Query(query, dargs) // nolint:wrapcheck // need clear error
 	default:
 		// This should not happen
 		return nil, ErrNonQueryer

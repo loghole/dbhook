@@ -11,17 +11,22 @@ type Stmt struct {
 	query string
 }
 
-func (stmt *Stmt) Close() error  { return stmt.Stmt.Close() }
+func (stmt *Stmt) Close() error {
+	return stmt.Stmt.Close() // nolint:wrapcheck // need clear error
+}
+
 func (stmt *Stmt) NumInput() int { return stmt.Stmt.NumInput() }
 
 // Exec Deprecated.
 // nolint:staticcheck // deprecated
-func (stmt *Stmt) Exec(args []driver.Value) (driver.Result, error) { return stmt.Stmt.Exec(args) }
+func (stmt *Stmt) Exec(args []driver.Value) (driver.Result, error) {
+	return stmt.Stmt.Exec(args) // nolint:wrapcheck // need clear error
+}
 
 // Query Deprecated.
 // nolint:staticcheck // deprecated
 func (stmt *Stmt) Query(args []driver.Value) (driver.Rows, error) {
-	return stmt.Stmt.Query(args)
+	return stmt.Stmt.Query(args) // nolint:wrapcheck // need clear error
 }
 
 // ExecContext must honor the context timeout and return when it is canceled.
@@ -41,26 +46,26 @@ func (stmt *Stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (dr
 	if stmt.hooks != nil {
 		ctx, err = stmt.hooks.Before(ctx, hookInput)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	results, err := stmt.execContext(ctx, args)
 	if err != nil {
 		if stmt.hooks == nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 
 		hookInput.Error = err
 
 		if _, err := stmt.hooks.Error(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	if stmt.hooks != nil {
 		if _, err := stmt.hooks.After(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -84,26 +89,26 @@ func (stmt *Stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (d
 	if stmt.hooks != nil {
 		ctx, err = stmt.hooks.Before(ctx, hookInput)
 		if err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	rows, err := stmt.queryContext(ctx, args)
 	if err != nil {
 		if stmt.hooks == nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 
 		hookInput.Error = err
 
 		if _, err := stmt.hooks.Error(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
 	if stmt.hooks != nil {
 		if _, err := stmt.hooks.After(ctx, hookInput); err != nil {
-			return nil, err //nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -112,7 +117,7 @@ func (stmt *Stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (d
 
 func (stmt *Stmt) queryContext(ctx context.Context, args []driver.NamedValue) (driver.Rows, error) {
 	if s, ok := stmt.Stmt.(driver.StmtQueryContext); ok {
-		return s.QueryContext(ctx, args)
+		return s.QueryContext(ctx, args) // nolint:wrapcheck // need clear error
 	}
 
 	return stmt.Query(argsToValue(args))
@@ -120,7 +125,7 @@ func (stmt *Stmt) queryContext(ctx context.Context, args []driver.NamedValue) (d
 
 func (stmt *Stmt) execContext(ctx context.Context, args []driver.NamedValue) (driver.Result, error) {
 	if s, ok := stmt.Stmt.(driver.StmtExecContext); ok {
-		return s.ExecContext(ctx, args)
+		return s.ExecContext(ctx, args) // nolint:wrapcheck // need clear error
 	}
 
 	return stmt.Exec(argsToValue(args))
