@@ -5,10 +5,14 @@ gotest:
 	go test -race -v -cover -coverprofile coverage.out $(GOTEST_PACKAGES)
 
 lint:
-	golangci-lint run -v
+	golangci-lint run ./... -c .golangci.yaml -v 
 
 coclient:
 	docker exec -it dbhook_cockroachdb_1 ./cockroach sql --insecure 
 	
 generate:
 	go generate ./...
+
+.PHONY: imports
+imports:
+	goimports --local "github.com/loghole/dbhook" -w -d $$(find . -type f -name '*.go')

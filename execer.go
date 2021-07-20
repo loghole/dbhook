@@ -48,7 +48,7 @@ func (conn *ExecerContext) ExecContext(
 
 	if conn.hooks != nil {
 		if _, err := conn.hooks.After(ctx, hookInput); err != nil {
-			return nil, err // nolint:wrapcheck // need clear error
+			return nil, err
 		}
 	}
 
@@ -62,14 +62,14 @@ func (conn *ExecerContext) execContext(
 ) (driver.Result, error) {
 	switch c := conn.Conn.Conn.(type) {
 	case driver.ExecerContext:
-		return c.ExecContext(ctx, query, args) // nolint:wrapcheck // need clear error
+		return c.ExecContext(ctx, query, args)
 	case driver.Execer: // nolint:staticcheck // deprecated
 		dargs, err := namedValueToValue(args)
 		if err != nil {
 			return nil, fmt.Errorf("can't contert named value to value: %w", err)
 		}
 
-		return c.Exec(query, dargs) // nolint:wrapcheck // need clear error
+		return c.Exec(query, dargs)
 	default:
 		// This should not happen
 		return nil, ErrNonExecer

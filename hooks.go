@@ -25,10 +25,10 @@ type Hook interface {
 }
 
 type HookInput struct {
-	Error  error
-	Args   []driver.Value
 	Query  string
+	Error  error
 	Caller CallerType
+	Args   []driver.Value
 }
 
 type HookOption func(*Hooks)

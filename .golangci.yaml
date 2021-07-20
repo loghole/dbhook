@@ -1,13 +1,14 @@
 # More info on config here: https://golangci-lint.run/usage/configuration/#config-file
 run:
-  tests: false
   timeout: 5m
+  skip-dirs:
+    - test
+  tests: false
 linters:
   enable-all: true
   disable:
     - exhaustivestruct
     - wrapcheck
-    - dupl
   fast: false
 linters-settings:
   gocritic:
@@ -22,13 +23,6 @@ linters-settings:
     enable-all: true
     disable:
       - shadow
-      - fieldalignment
 
   gci:
-    local-prefixes: github.com/loghole/database
-
-  wrapcheck:
-    ignoreSigs:
-      - .Errorf(
-      - errors.New(
-      - .WrapWithCode(
+    local-prefixes: github.com/loghole/dbhook
