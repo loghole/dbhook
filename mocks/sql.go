@@ -7,8 +7,9 @@ package mocks
 import (
 	context "context"
 	driver "database/sql/driver"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockConn is a mock of Conn interface

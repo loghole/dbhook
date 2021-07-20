@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/golang/mock/gomock"
+
 	"github.com/loghole/dbhook/mocks"
 )
 
