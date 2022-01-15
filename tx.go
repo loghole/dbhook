@@ -25,26 +25,26 @@ func (tx *Tx) Commit() error {
 	if tx.hooks != nil {
 		tx.ctx, err = tx.hooks.Before(tx.ctx, hookInput)
 		if err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 
 	err = tx.Tx.Commit()
 	if err != nil {
 		if tx.hooks == nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 
 		hookInput.Error = err
 
 		if tx.ctx, err = tx.hooks.Error(tx.ctx, hookInput); err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 
 	if tx.hooks != nil {
 		if tx.ctx, err = tx.hooks.After(tx.ctx, hookInput); err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 
@@ -65,26 +65,26 @@ func (tx *Tx) Rollback() error {
 	if tx.hooks != nil {
 		tx.ctx, err = tx.hooks.Before(tx.ctx, hookInput)
 		if err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 
 	err = tx.Tx.Rollback()
 	if err != nil {
 		if tx.hooks == nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 
 		hookInput.Error = err
 
 		if tx.ctx, err = tx.hooks.Error(tx.ctx, hookInput); err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 
 	if tx.hooks != nil {
 		if tx.ctx, err = tx.hooks.After(tx.ctx, hookInput); err != nil {
-			return err //nolint:wrapcheck // need clear error
+			return err
 		}
 	}
 

@@ -15,5 +15,5 @@ func (s *SessionResetter) ResetSession(ctx context.Context) error {
 		return ErrNonSessionResetter
 	}
 
-	return c.ResetSession(ctx) // nolint:wrapcheck // need clear error
+	return c.ResetSession(ctx)
 }
