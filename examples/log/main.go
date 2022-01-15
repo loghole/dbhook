@@ -1,18 +1,3 @@
-# dbhook
-[![GoDoc](https://pkg.go.dev/badge/github.com/loghole/dbhook)](https://pkg.go.dev/github.com/loghole/dbhook)
-[![Go Report Card](https://goreportcard.com/badge/github.com/loghole/dbhook)](https://goreportcard.com/report/github.com/loghole/dbhook)
-
-This is a hook for any database/sql driver.  
-DBhook allows to log requests, measure their duration, control the behavior of requests without changing the code base.  
-This is the middelware for your database.
-
-# Install
-```sh
-go get github.com/loghole/dbhook
-```
-
-# Usage
-```go
 package main
 
 import (
@@ -87,10 +72,3 @@ func main() {
   before query: SELEC id, text FROM t
   error query: near "SELEC": syntax error. duration: 10.57µs
 */
-```
-
-# Real worl examples
-- [Reconnect hook](https://github.com/loghole/database/blob/2688b139e9899d532ddfae97a21f427c8258c103/hooks/reconnect.go#L1-L42)
-- [Error with self code](https://github.com/loghole/database/blob/2688b139e9899d532ddfae97a21f427c8258c103/hooks/simplerr.go#L1-L42)
-- [Tracing hook](https://github.com/loghole/database/blob/76be80785f31df69d255da012ba728a65efa2785/hooks/tracing.go#L1-L72)
-- [Metrics hook](https://github.com/loghole/database/blob/76be80785f31df69d255da012ba728a65efa2785/hooks/metrics.go#L1-L95)
