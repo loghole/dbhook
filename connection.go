@@ -111,14 +111,14 @@ func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx
 	return &Tx{Tx: tx, hooks: conn.hooks, ctx: initCtx}, nil
 }
 
-func (conn *Conn) CheckNamedValue(nv *driver.NamedValue) (err error) {
+func (conn *Conn) CheckNamedValue(namedValue *driver.NamedValue) (err error) {
 	if val, ok := conn.Conn.(driver.NamedValueChecker); ok { // need for clickhouse driver.
-		return val.CheckNamedValue(nv)
+		return val.CheckNamedValue(namedValue)
 	}
 
 	// Use default golang std lib check.
 	// https://github.com/golang/go/blob/2ebe77a2fda1ee9ff6fd9a3e08933ad1ebaea039/src/database/sql/convert.go#L96
-	nv.Value, err = driver.DefaultParameterConverter.ConvertValue(nv.Value)
+	namedValue.Value, err = driver.DefaultParameterConverter.ConvertValue(namedValue.Value)
 
 	return err
 }
