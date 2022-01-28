@@ -31,6 +31,8 @@ func BenchmarkNamedValueToValue(b *testing.B) {
 }
 
 func Test_namedValueToValue(t *testing.T) {
+	t.Parallel()
+
 	named := make([]driver.NamedValue, 10)
 	for i := range named {
 		named[i] = driver.NamedValue{
@@ -42,6 +44,7 @@ func Test_namedValueToValue(t *testing.T) {
 	type args struct {
 		named []driver.NamedValue
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -81,10 +84,14 @@ func Test_namedValueToValue(t *testing.T) {
 	snapshotter := cupaloy.New(cupaloy.SnapshotSubdirectory(testDataPath))
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := namedValueToValue(tt.args.named)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("namedValueToValue() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 
@@ -94,6 +101,8 @@ func Test_namedValueToValue(t *testing.T) {
 }
 
 func Test_argsToValue(t *testing.T) {
+	t.Parallel()
+
 	values := make([]driver.NamedValue, 10)
 	for i := range values {
 		values[i] = driver.NamedValue{
@@ -105,6 +114,7 @@ func Test_argsToValue(t *testing.T) {
 	type args struct {
 		args []driver.NamedValue
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -143,7 +153,10 @@ func Test_argsToValue(t *testing.T) {
 	snapshotter := cupaloy.New(cupaloy.SnapshotSubdirectory(testDataPath))
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got := argsToValue(tt.args.args)
 
 			snapshotter.SnapshotT(t, got)

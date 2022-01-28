@@ -1,4 +1,4 @@
-package test
+package tests
 
 import (
 	"context"
@@ -11,14 +11,7 @@ import (
 	"github.com/loghole/dbhook/mocks"
 )
 
-type queryerConn struct {
-	driver.Conn
-	driver.ConnBeginTx
-	driver.QueryerContext
-	driver.ExecerContext
-}
-
-func MakeDefaultDriver(ctrl *gomock.Controller, name string) driver.Driver {
+func MakeTxDriver(ctrl *gomock.Controller, name string) driver.Driver {
 	drv := mocks.NewMockDriver(ctrl)
 
 	drv.EXPECT().Open(gomock.Any()).AnyTimes().DoAndReturn(func(name string) (driver.Conn, error) {
@@ -60,7 +53,20 @@ func MakeDefaultDriver(ctrl *gomock.Controller, name string) driver.Driver {
 				return result, nil
 			})
 
-		return &queryerConn{conn, nil, queryer, execer}, nil
+		connTx := mocks.NewMockConnBeginTx(ctrl)
+
+		connTx.EXPECT().BeginTx(gomock.Any(), gomock.Any()).
+			DoAndReturn(func(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
+				tx := mocks.NewMockTx(ctrl)
+
+				tx.EXPECT().Commit().DoAndReturn(func() error {
+					return nil
+				})
+
+				return tx, nil
+			})
+
+		return &queryerConn{conn, connTx, queryer, execer}, nil
 	})
 
 	sql.Register(name, drv)

@@ -12,7 +12,7 @@ import (
 	"github.com/loghole/dbhook/mocks"
 )
 
-func TestQueryerContext_QueryContext(t *testing.T) {
+func TestExecerContext_ExecContext(t *testing.T) {
 	t.Parallel()
 
 	var (
@@ -34,19 +34,19 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    driver.Rows
+		want    driver.Result
 		wantErr bool
 	}{
 		{
-			name: "pass with QueryContext",
+			name: "pass with ExecContext",
 			fields: fields{
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockAdvancedConn(ctrl)
 					conn.EXPECT().
-						QueryContext(ctx, "SELECT", nil).
+						ExecContext(ctx, "INSERT", nil).
 						Times(1).
-						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Rows, error) {
-							rows := mocks.NewMockRows(ctrl)
+						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Result, error) {
+							rows := mocks.NewMockResult(ctrl)
 
 							return rows, nil
 						})
@@ -60,20 +60,20 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				},
 			},
 			args: args{
-				query: "SELECT",
+				query: "INSERT",
 			},
-			want: mocks.NewMockRows(ctrl),
+			want: mocks.NewMockResult(ctrl),
 		},
 		{
-			name: "pass with Query",
+			name: "pass with Exec",
 			fields: fields{
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockQueryerConn(ctrl)
 					conn.EXPECT().
-						Query("SELECT", []driver.Value{}).
+						Exec("INSERT", []driver.Value{}).
 						Times(1).
-						DoAndReturn(func(query string, arg []driver.Value) (driver.Rows, error) {
-							rows := mocks.NewMockRows(ctrl)
+						DoAndReturn(func(query string, arg []driver.Value) (driver.Result, error) {
+							rows := mocks.NewMockResult(ctrl)
 
 							return rows, nil
 						})
@@ -85,12 +85,12 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				},
 			},
 			args: args{
-				query: "SELECT",
+				query: "INSERT",
 			},
-			want: mocks.NewMockRows(ctrl),
+			want: mocks.NewMockResult(ctrl),
 		},
 		{
-			name: "error with Query named",
+			name: "error with Exec named",
 			fields: fields{
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockQueryerConn(ctrl)
@@ -102,7 +102,7 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				},
 			},
 			args: args{
-				query: "SELECT",
+				query: "INSERT",
 				args: []driver.NamedValue{
 					{
 						Ordinal: 1,
@@ -119,7 +119,7 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "without Query",
+			name: "without Exec",
 			fields: fields{
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockConn(ctrl)
@@ -131,7 +131,7 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				},
 			},
 			args: args{
-				query: "SELECT",
+				query: "INSERT",
 			},
 			want:    nil,
 			wantErr: true,
@@ -145,12 +145,12 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 					return conn
 				},
 				makeHooks: func() Hook {
-					hook := NewHooks(WithHooksBefore(&testBeforeHookWithError{}))
+					hook := NewHooks(WithHook(&testHook{}), WithHooksBefore(&testBeforeHookWithError{}))
 
 					return hook
 				},
 			},
-			args:    args{query: "SELECT"},
+			args:    args{query: "INSERT"},
 			want:    nil,
 			wantErr: true,
 		},
@@ -160,10 +160,10 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockAdvancedConn(ctrl)
 					conn.EXPECT().
-						QueryContext(ctx, "SELECT", nil).
+						ExecContext(ctx, "INSERT", nil).
 						Times(1).
-						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Rows, error) {
-							rows := mocks.NewMockRows(ctrl)
+						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Result, error) {
+							rows := mocks.NewMockResult(ctrl)
 
 							return rows, nil
 						})
@@ -171,12 +171,12 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 					return conn
 				},
 				makeHooks: func() Hook {
-					hook := NewHooks(WithHooksAfter(&testAfterHookWithError{}))
+					hook := NewHooks(WithHook(&testHook{}), WithHooksAfter(&testAfterHookWithError{}))
 
 					return hook
 				},
 			},
-			args:    args{query: "SELECT"},
+			args:    args{query: "INSERT"},
 			want:    nil,
 			wantErr: true,
 		},
@@ -186,9 +186,9 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockAdvancedConn(ctrl)
 					conn.EXPECT().
-						QueryContext(ctx, "SELECT", nil).
+						ExecContext(ctx, "INSERT", nil).
 						Times(1).
-						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Rows, error) {
+						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Result, error) {
 							return nil, errors.New("some error")
 						})
 
@@ -198,7 +198,7 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 					return nil
 				},
 			},
-			args:    args{query: "SELECT"},
+			args:    args{query: "INSERT"},
 			want:    nil,
 			wantErr: true,
 		},
@@ -208,21 +208,21 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockAdvancedConn(ctrl)
 					conn.EXPECT().
-						QueryContext(ctx, "SELECT", nil).
+						ExecContext(ctx, "INSERT", nil).
 						Times(1).
-						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Rows, error) {
+						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Result, error) {
 							return nil, errors.New("some error")
 						})
 
 					return conn
 				},
 				makeHooks: func() Hook {
-					hook := NewHooks(WithHooksError(&testErrorHookWithError{}))
+					hook := NewHooks(WithHook(&testHook{}), WithHooksError(&testErrorHookWithError{}))
 
 					return hook
 				},
 			},
-			args:    args{query: "SELECT"},
+			args:    args{query: "INSERT"},
 			want:    nil,
 			wantErr: true,
 		},
@@ -232,9 +232,9 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 				makeConn: func() driver.Conn {
 					conn := mocks.NewMockAdvancedConn(ctrl)
 					conn.EXPECT().
-						QueryContext(ctx, "SELECT", nil).
+						ExecContext(ctx, "INSERT", nil).
 						Times(1).
-						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Rows, error) {
+						DoAndReturn(func(ctx context.Context, query string, arg []driver.NamedValue) (driver.Result, error) {
 							return nil, errors.New("some error")
 						})
 
@@ -246,7 +246,7 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 					return hook
 				},
 			},
-			args: args{query: "SELECT"},
+			args: args{query: "INSERT"},
 			want: nil,
 		},
 	}
@@ -256,14 +256,14 @@ func TestQueryerContext_QueryContext(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			conn := &QueryerContext{
+			conn := &ExecerContext{
 				Conn: &Conn{
 					Conn:  tt.fields.makeConn(),
 					hooks: tt.fields.makeHooks(),
 				},
 			}
 
-			got, err := conn.QueryContext(ctx, tt.args.query, tt.args.args)
+			got, err := conn.ExecContext(ctx, tt.args.query, tt.args.args)
 			switch tt.wantErr {
 			case true:
 				assert.Error(t, err)
