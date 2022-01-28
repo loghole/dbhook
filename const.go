@@ -1,6 +1,6 @@
 package dbhook
 
-const testDataPath = "./test/.snapshots" // nolint:deadcode,unused,varcheck // used in test
+const testDataPath = "./tests/.snapshots" // nolint:deadcode,unused,varcheck // used in test
 
 type CallerType string
 
