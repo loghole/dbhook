@@ -1,7 +1,7 @@
 # dbhook
 [![GoDoc](https://pkg.go.dev/badge/github.com/loghole/dbhook)](https://pkg.go.dev/github.com/loghole/dbhook)
 [![Go Report Card](https://goreportcard.com/badge/github.com/loghole/dbhook)](https://goreportcard.com/report/github.com/loghole/dbhook)
-[![Coverage Status](https://coveralls.io/repos/github/loghole/dbhook/badge.svg?branch=lissteron-patch-1)](https://coveralls.io/github/loghole/dbhook?branch=lissteron-patch-1)
+[![Coverage Status](https://coveralls.io/repos/github/loghole/dbhook/badge.svg?branch=main)](https://coveralls.io/github/loghole/dbhook?branch=main)
 
 This is a hook for any database/sql driver.  
 DBhook allows to log requests, measure their duration, control the behavior of requests without changing the code base.  

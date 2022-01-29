@@ -2,6 +2,7 @@ package dbhook
 
 const testDataPath = "./tests/.snapshots" // nolint:deadcode,unused,varcheck // used in test
 
+// CallerType is callers type list
 type CallerType string
 
 const (
