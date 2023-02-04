@@ -63,7 +63,7 @@ func (conn *ExecerContext) execContext(
 	switch c := conn.Conn.Conn.(type) {
 	case driver.ExecerContext:
 		return c.ExecContext(ctx, query, args)
-	case driver.Execer: // nolint:staticcheck // deprecated
+	case driver.Execer: //nolint:staticcheck // deprecated
 		dargs, err := namedValueToValue(args)
 		if err != nil {
 			return nil, fmt.Errorf("can't contert named value to value: %w", err)

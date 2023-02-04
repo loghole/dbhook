@@ -15,7 +15,8 @@ func (conn *Conn) Prepare(query string) (driver.Stmt, error) { return conn.Conn.
 func (conn *Conn) Close() error                              { return conn.Conn.Close() }
 
 // Begin Deprecated.
-// nolint:staticcheck // deprecated
+//
+//nolint:staticcheck // deprecated
 func (conn *Conn) Begin() (driver.Tx, error) { return conn.Conn.Begin() }
 
 func (conn *Conn) PrepareContext(ctx context.Context, query string) (driver.Stmt, error) {
@@ -111,6 +112,7 @@ func (conn *Conn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx
 	return &Tx{Tx: tx, hooks: conn.hooks, ctx: initCtx}, nil
 }
 
+//nolint:nonamedreturns // need err value
 func (conn *Conn) CheckNamedValue(namedValue *driver.NamedValue) (err error) {
 	if val, ok := conn.Conn.(driver.NamedValueChecker); ok { // need for clickhouse driver.
 		return val.CheckNamedValue(namedValue)

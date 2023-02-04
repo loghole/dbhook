@@ -63,7 +63,7 @@ func (conn *QueryerContext) queryContext(
 	switch c := conn.Conn.Conn.(type) {
 	case driver.QueryerContext:
 		return c.QueryContext(ctx, query, args)
-	case driver.Queryer: // nolint:staticcheck // deprecated
+	case driver.Queryer: //nolint:staticcheck // deprecated
 		dargs, err := namedValueToValue(args)
 		if err != nil {
 			return nil, fmt.Errorf("can't contert named value to value: %w", err)

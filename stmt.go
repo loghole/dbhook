@@ -18,19 +18,22 @@ func (stmt *Stmt) Close() error {
 func (stmt *Stmt) NumInput() int { return stmt.Stmt.NumInput() }
 
 // Exec Deprecated.
-// nolint:staticcheck // deprecated
+//
+//nolint:staticcheck // deprecated
 func (stmt *Stmt) Exec(args []driver.Value) (driver.Result, error) {
 	return stmt.Stmt.Exec(args)
 }
 
 // Query Deprecated.
-// nolint:staticcheck // deprecated
+//
+//nolint:staticcheck // deprecated
 func (stmt *Stmt) Query(args []driver.Value) (driver.Rows, error) {
 	return stmt.Stmt.Query(args)
 }
 
 // ExecContext must honor the context timeout and return when it is canceled.
-// nolint:dupl // it's ok
+//
+//nolint:dupl // it's ok
 func (stmt *Stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (driver.Result, error) {
 	var (
 		err       error
@@ -73,7 +76,8 @@ func (stmt *Stmt) ExecContext(ctx context.Context, args []driver.NamedValue) (dr
 }
 
 // QueryContext must honor the context timeout and return when it is canceled.
-// nolint:dupl // it's ok
+//
+//nolint:dupl // it's ok
 func (stmt *Stmt) QueryContext(ctx context.Context, args []driver.NamedValue) (driver.Rows, error) {
 	var (
 		err       error
