@@ -8,7 +8,7 @@ import (
 type Tx struct {
 	Tx    driver.Tx
 	hooks Hook
-	ctx   context.Context // nolint:containedctx // ok for this
+	ctx   context.Context //nolint:containedctx // ok for this
 }
 
 func (tx *Tx) Commit() error {

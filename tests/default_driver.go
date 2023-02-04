@@ -39,7 +39,7 @@ func MakeDefaultDriver(ctrl *gomock.Controller, name string) driver.Driver {
 
 				rows.EXPECT().Next(gomock.Any()).AnyTimes().SetArg(0, []driver.Value{"some"}).
 					DoAndReturn(func(args []driver.Value) error {
-						if rowsCallCounter >= 2 { // nolint:gomnd // it's test
+						if rowsCallCounter >= 2 { //nolint:gomnd // it's test
 							return io.EOF
 						}
 

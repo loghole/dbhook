@@ -40,7 +40,7 @@ type Hooks struct {
 }
 
 func NewHooks(opts ...HookOption) *Hooks {
-	hooks := &Hooks{}
+	hooks := &Hooks{} //nolint:exhaustruct // not needed
 
 	for _, opt := range opts {
 		opt(hooks)
